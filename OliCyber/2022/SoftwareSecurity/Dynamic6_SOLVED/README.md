@@ -17,9 +17,12 @@ Per ottenere la flag stampa il registro come numero intero SIGNED e inserisci il
 
 ## Solution
 ```sh
-gdb ./sw-13```
+gdb ./sw-13
+```
 and then
-```p/d $rax```
+```sh
+p/d $rax
+```
 
 ## Flag
 `flag{415710747049308268}`
