@@ -6,8 +6,7 @@ Quasi sempre per risolvere queste challenge abbiamo bisogno di utilizzare tool p
 Prova con Ghidra (o il tuo decompiler di fiducia) e analizza il contenuto della funzione main.
 
 ## Solution
-Doing `r2 -c 'iz' sw-05` in bash it's the same as opening `sw-05` file with `radare2` and then execute the `iz` command which print the Strings in data section.
-One of this Strings is the flag.
+Doing ```r2 -c 'iz' sw-05``` in bash it's the same as opening `sw-05` file with `radare2` and then execute the ```iz``` command which prints the Strings present in data section, one of which is the flag.
   
 ## Flag
 `flag{81750e63}`

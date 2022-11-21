@@ -5,7 +5,7 @@
 Il comando strace permette di tracciare le syscall eseguite dai processi figli con l'opzione -f.
 
 ## Solution
-`strace -f ./sw-11```
+```strace -f ./sw-11```
 
 ## Flag
 `flag{5a11b5a6}`

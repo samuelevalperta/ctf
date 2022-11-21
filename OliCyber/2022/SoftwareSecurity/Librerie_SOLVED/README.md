@@ -5,7 +5,7 @@ In particolare questo binario cerca di caricare delle librerie strane. Quali?
 Prova con ldd, è un tool che permette di elencare le shared libraries richieste da un file binario.
 
 ## Solution
-ldd sw-02
+```ldd sw-02```
 
 ## Flag
 `flag{1d8db559}`

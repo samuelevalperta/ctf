@@ -5,7 +5,7 @@
 Il comando ltrace fornisce l'opzione -e che permette di filtrare le funzioni chiamate.
 
 ## Solution
-`ltrace -e 'access' ./sw-10```
+```ltrace -e 'access' ./sw-10```
 
 ## Flag
 `flag{0f32826c}`

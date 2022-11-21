@@ -12,7 +12,7 @@ Aspetta l'esecuzione della int 3 e poi leggi il contenuto dei registri con info 
 Come per il resto delle challenge Dynamic, prova a risolverle senza l'utilizzo di tool di analisi statica come Ghidra.
 
 ## Solution
-`gdb ./sw-12` and then `info registers`
+```gdb ./sw-12``` then ```info registers```
 
 ## Flag
 `flag{15af56f2f4295e9d38}`
