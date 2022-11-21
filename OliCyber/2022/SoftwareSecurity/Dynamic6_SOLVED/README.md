@@ -16,7 +16,10 @@ Apri il programma con gdb e al breakpoint leggi $rax utilizzando il comando p.
 Per ottenere la flag stampa il registro come numero intero SIGNED e inserisci il risultato dentro a flag{} (senza il segno +/-).
 
 ## Solution
-```gdb ./sw-13``` and then ```p/d $rax```
+```sh
+gdb ./sw-13```
+and then
+```p/d $rax```
 
 ## Flag
 `flag{415710747049308268}`
