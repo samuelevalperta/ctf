@@ -8,7 +8,7 @@ Su Ubuntu: apt install strace
 
 ## Solution
 ```sh
-stracei ./sw-09
+strace ./sw-09
 ```
   
 ## Flag
