@@ -47,9 +47,9 @@ From the 7th argument upwards, following the amd64 calling convention, the argum
 At the top of the stack there's our input, more precisely `0x6e243625` (that correspond to ASCII `%6$n`) which is obviously not a valid address.
 But we solve this using `%7$p` to make the **%n** point to the second address of the stack, which we can arbitrary write(remember that our input is the last thing pushed on the stack).
 
-- `AAAA` will make the **%n** write 4(so different from `0x0`) and also will pad our input so the address we send will be placed in the seconds 8 bytes of the stack.
+- `AAAA` will make the **%n** write `0x4`(so different from `0x0`) and also will pad our input so the address we send will be placed in the seconds 8 bytes of the stack.
 
-If we place a `break printf` and look at the stack the moment right after the function call it will be:
+If we place a `break printf` using `gdb` and look at the stack the moment right before the function call it will be:
 ```
 pwndbg> x/4x $rsp
 0x7ffcbcdbb460: 0x41414141      0x6e243725      0x0040404c      0x00000000
