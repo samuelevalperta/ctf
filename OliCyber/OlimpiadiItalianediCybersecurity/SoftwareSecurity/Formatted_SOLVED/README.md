@@ -1,3 +1,4 @@
+
 # Formatted
 
 ## Description
@@ -7,17 +8,53 @@ nc formatted.challs.olicyber.it 10305
 
 ## Solution
 
-We can exploit this little program with a format string, sending the following payload.
+First of all we need to know that the program will print the flag before exiting only if the value of the global variable `flag` is different from `0x0`, so at least we know our goal.
+
+Analyzing more in depth we can understand that the operation is as follows:
+- we are asked for the name as input
+- our input is put into a printf and returned as output.
+
+This use of the `printf()` function allows us to use a [format string attack](https://axcheron.github.io/exploit-101-format-strings), the name of the challenge confirms that this is the right way.
+
+After reading the above article it won't be too hard to get to this solution
 ```python
 payload = b'A'*4  + b'%7$n' + p64(0x40404c)
 ```
-Because **%n** will write the size of our input if we don't write something before it the value `0` will be written and our goal is to write anything different from 0 into the global variable **flag**.
-We need to this 4 of this to guarantee the right alignment of the stack.
+but let's explain better.
 
-`printf(%7$n)` will write in position 7, which refers to the 8th argument.
-We are working on amd-64 so the first 6 arguments are passed from registers and from the 7th onwards from the stack.
-So if we try to access the 7th argument we are accessing the 8 bytes at the top of the stack (the first 8 bytes of our input, which are the last thing being pushed).
-We want to write into `0x40404c` (which is the address of the global variable) so we write this into the second 8 bytes of the stack and refer to it with %8 in the printf call.
+We need to remember that our payload will be passed as argument of the `printf()` function so our program will execute something like this
+```c
+printf(AAAA%7$n\x4c\x40\x40\x00)
+``` 
+
+
+But why this payload?
+- **%n** is a format which will write the *size* of our input into the address pointed by **%n**.
+
+Being it the first format specifier read by `printf()`it will point to the second argument, which following the amd64 calling convention will point to `$rsi`.
+
+```c
+// Example 1, %s reference to $rsi and %p to $rdx
+printf("%s,%p",$rsi,$rdx)
+
+// Example 2, %s reference to $rdx and %p to $rsi
+printf("%2$s,%1$s", $rsi, $drx)
+```
+
+So we need to make the **%n** point to the address of our `flag` which is `0x40404c` (obtained with Ghidra) but we can't change the value of `$rsi` in any way, we can only write things to the stack as our input is saved there.
+
+From the 7th argument upwards, following the amd64 calling convention, the argument of a function will be taken from the stack, so `%6$n` will write to the address pointed by the top of the stack.
+At the top of the stack there's our input, more precisely `0x0x6e243725` (that correspond to ASCII `%6$p`) which is obviously not a valid address to write to.
+But we can use `%7$p` to make the **%n** point to the second address of the stack, which we can arbitrary write.
+
+- `AAA` will make the **%n** write 4 and also will pad our input so the stack at the moment of the `printf()` call is:
+```
+pwndbg> x/4x $rsp
+0x7ffcbcdbb460: 0x41414141      0x6e243725      0x0040404c      0x00000000
+```
+
+With this payload we achieve to write 4 at the address of the global `flag` so the service will give us the flag.
 
 ## Flag
 `flag{So_y0U_kn0w_F0rm4t_StR1ng5}`
+
