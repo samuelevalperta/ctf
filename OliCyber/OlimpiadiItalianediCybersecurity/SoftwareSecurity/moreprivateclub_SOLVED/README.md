@@ -19,6 +19,7 @@ This is how the stack will look after the call to `scanf()`:
 | input+8|
 |input|
 <br>
+
 By sending an input longer than 35 we will first overwrite the **saved base pointer** and then the **return address** (where the address from which the program will continue its execution after the `scanf()` is saved).<br>
 Observing the disassembled code we notice that immediately after the `scanf()` the **return address** saved in the stack will point to `0x000011fb` so the program will performs these operations
 ```bash
