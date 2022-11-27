@@ -25,7 +25,7 @@ By sending an input longer than 35 we will first overwrite the **saved base poin
 Observing the disassembled code we notice that immediately after the `scanf()` the **return address** saved in the stack will point to `0x000011fb` so the program will performs these operations
 
 ```bash
-000011fb		0f b6 45 d0				MOVZX		EAX,byte ptr [RBP + local_38]
+000011fb		0f b6 45 d0			MOVZX		EAX,byte ptr [RBP + local_38]
 000011ff		84 c0			TEST		AL,AL
 00001201		74 40			JZ		LAB_00001243
 ```
