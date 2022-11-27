@@ -2,6 +2,7 @@
 
 ## Description
 > Entrare nel mio club non sarà così facile questa volta. ):
+
 > nc moreprivateclub.challs.olicyber.it 10016
 
 ## Solution
@@ -20,6 +21,7 @@ This is how the stack will look after the call to `scanf()` :
 | input+8|
 |input|
 
+
 By sending an input longer than 35 we will first overwrite the **saved base pointer** and then the **return address** (where the address from which the program will continue its execution after the `scanf()` is saved).
 
 Observing the disassembled code we notice that immediately after the `scanf()` the **return address** saved in the stack will point to `0x000011fb` so the program will performs these operations
@@ -30,7 +32,7 @@ Observing the disassembled code we notice that immediately after the `scanf()` t
 00001201		74 40			JZ		LAB_00001243
 ```
 
-which will make our program always jump to the instruction at `0x00001243`, which will print the message *"Non hai il badge, mi displace."* and then exit.
+which will make our program always jump to the instruction at `0x00001243`, which will print the message *"Non hai il badge, mi dispiace."* and then exit.
 If we keep looking at the disassembled code we find, at address `0x00001235`, a call to the *libc* `system()` function with `/bin/sh` as argument.
 
 At this point we know our goal: write `0x1235` where the **return address** is saved.
@@ -49,6 +51,7 @@ and we can get the offset with
 pwn cyclic -l 0x61616f61        # because of the endianness we pick the last 8 bytes
 ```
 which is `0x37`.
+
 
 Our exploit will have to send `0x37` garbage values and then `0x1235` formatted as *x86_64 little endian* address.
 
