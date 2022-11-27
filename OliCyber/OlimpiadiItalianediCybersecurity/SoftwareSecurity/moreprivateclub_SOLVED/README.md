@@ -2,8 +2,7 @@
 
 ## Description
 > Entrare nel mio club non sarà così facile questa volta. ):
-
-> nc moreprivateclub.challs.olicyber.it 10016
+nc moreprivateclub.challs.olicyber.it 10016
 
 ## Solution
 Analyzing the file with [Ghidra](https://GitHub.com/NationalSecurityAgency/Ghidra) we easily notice an error in the implementation of the `scanf()` function when we are asked to enter the name.
@@ -20,6 +19,7 @@ This is how the stack will look after the call to `scanf()` :
 | input+16|
 | input+8|
 |input|
+
 
 
 By sending an input longer than 35 we will first overwrite the **saved base pointer** and then the **return address** (where the address from which the program will continue its execution after the `scanf()` is saved).
@@ -51,6 +51,7 @@ and we can get the offset with
 pwn cyclic -l 0x61616f61        # because of the endianness we pick the last 8 bytes
 ```
 which is `0x37`.
+
 
 
 Our exploit will have to send `0x37` garbage values and then `0x1235` formatted as *x86_64 little endian* address.
