@@ -9,7 +9,7 @@ Analyzing the file with [Ghidra](https://GitHub.com/NationalSecurityAgency/Ghidr
 In fact, our input will be saved in a *char array* of size *35* but there’s no type of length check so nothing prevents us from entering more than the *35* characters being reserved for it.
 
 This is how the stack will look after the call to `scanf()` :
-||
+
 |:---:|
 | return address|
 | saved base pointer|
