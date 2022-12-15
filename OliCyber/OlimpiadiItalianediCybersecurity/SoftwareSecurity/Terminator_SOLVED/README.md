@@ -74,8 +74,8 @@ rip 0x4011c7 (main+101)
 - 0x4011c7 contains `mov rax, 0` so this is executed and the `rip` is incremented to 0x4011cc
 - **leave** (`mov rsp, rbp` and `pop rbp`) from `main()`
 ```bash
-00:0000│     0x4343434343434343
-01:0008│ rsp 0x434343434343434b
+00:0000│     0x4343434343434343 ◂— 0xdeadbeef
+01:0008│ rsp 0x434343434343434b ◂— 0xcafebabe
 ... ↓
 ..:....│ rbp 0xdeadbeef
 
@@ -84,15 +84,17 @@ rip 0x4011cd
 
 - **ret** (`pop rip`)
 ```bash
-00:0000│     0x434343434343434b
+00:0000│     0x434343434343434b ◂— 0xcafebabe
 01:0008│ rsp 0x4343434343434353
 ... ↓
 ..:....│ rbp 0xdeadbeef
 
-rip 0x4343434343434353
+rip 0xcafebabe
 ```
 
-We managed to give `rip` the value of the **saved base pointer (incremented by 0x10)** saved in the `welcome()` frame, which we can arbitrary change due to the stack overflow.
+We managed to give `rip` the value contained in the address (incremented by 0x10) pointed by the  **saved base pointer** of the `welcome()` frame, which we can arbitrary change due to the stack overflow.
+
+
 
 ## Flag
 `flag{d0Nt_F0rg37_y0uR_5tr1nG_T3rM1n470R}`
