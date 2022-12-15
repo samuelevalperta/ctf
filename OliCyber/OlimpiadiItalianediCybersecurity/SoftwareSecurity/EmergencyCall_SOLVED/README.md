@@ -10,10 +10,10 @@ Thanks to Ghidra we can easily notice an out of bounds write in the request of t
 
 That's the output of the `checksec` command
 ```bash
-	RELRO:    No RELRO
-    Stack:    No canary found
-    NX:       NX enabled
-    PIE:      No PIE (0x400000)
+RELRO:    No RELRO
+Stack:    No canary found
+NX:       NX enabled
+PIE:      No PIE (0x400000)
 ```
 Having No PIE means that the base of our binary will always be the same in every execution, so we exactly know the address of every assembly operation, even on the remote service.<br>
 
