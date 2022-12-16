@@ -6,7 +6,7 @@ Puoi collegarti al servizio remoto con:<br>
 nc terminator.challs.olicyber.it 10307
 
 ## Solution
-I used [Cutter]('https://github.com/rizinorg/cutter') to analize this program and this is what I found out.
+I used [Cutter]("https://github.com/rizinorg/cutter") to analize this program and this is what I found out.
 
 The program reads an input of 0x38 bytes and saves it in a 56(0x38) long char array named **buf**, then save the value `0xa` to the address  `*buf+inputLen`.
 
@@ -92,8 +92,21 @@ rip 0x4011cd
 rip 0xcafebabe
 ```
 
-We managed to give `rip` the value contained in the address (incremented by 0x10) pointed by the  **saved base pointer** of the `welcome()` frame, which we can arbitrary change due to the stack overflow.
+We managed to give `rip` the value contained in the address (incremented by 0x8) pointed by the  **saved base pointer** in the `welcome()` frame, which we can arbitrary change due to the stack overflow.
+Here's a less abstractive view of the sentence just written (the values used down here have no connection with the ones used above, they just look similar):
 
+```bash
+sbp 0x4141414141414141 ◂— 0x4242424242424242
+    0x424242424242424b ◂— 0x4343434343434343
+rip 0x4343434343434343
+```
+
+The goal is to assign to `rip` a value sent by us (so saved on the stack) and this is possible thanks to the **base pointer** leak that we obtained earlier.<br>
+We know that our input (saved in `welcome()` frame) is stored at an address slightly lower than the leak we obtained (`rbp` of `main()` frame). We can refine the search using `pwn cyclic`.
+
+### ROP
+Now that we can assign a value to `rip` at our discretion we can exploit using a ROP chain.
+We use the ROP chain to dynamically get the address of `puts` (stored in the GOT) in the libc and, knowing the version, we find the library base. We repeat the execution of `main()` but this time our ROP chain will execute `system("/bin/sh")`.
 
 
 ## Flag
