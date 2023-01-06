@@ -10,6 +10,7 @@
 - GuessTheNumber
 - privateclub
 - moreprivateclub
+- GeneratoreNumeri(poco)Casuali
 
 ## Rev
 - HiddenVariable
@@ -21,6 +22,7 @@
 
 ## Shellcode
 - Readdle
+- GeneratoreNumeri(poco)Casuali
 
 ## Stack Pivoting
 - Terminator
