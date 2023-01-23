@@ -6,7 +6,7 @@ Puoi collegarti al servizio remoto con:
 nc emergency.challs.olicyber.it 10306
 
 ## Solution
-Thanks to Ghidra we can easily notice an out of bounds write in the request of the emergency. We are asked for the input trought a **read_syscall** with maximum size of $128$ and it will be saved in a **char array** of length $32$.
+Thanks to Ghidra we can easily notice an out of bounds write in the request of the emergency. We are asked for the input trought a **read syscall** with maximum size of $128$ and it will be saved in a **char array** of length $32$.
 
 That's the output of the `checksec` command
 ```bash
@@ -70,14 +70,12 @@ Now `RIP` points to $\mathrm{0x4010E0}$ which is `RETURN 0`, executing this will
 |rbp|0x4242424242424242|
 
 
-<br>
-
-**RIP** = $\mathrm{0x4343434343434343}$.
+RIP = $\mathrm{0x4343434343434343}$.
 
 At this point, knowing that we have control over the return address, we can adapt the payload to our needs.
 We can exploit this using ROP due to the fact that the program was compiled without PIE.
 <br>
-Our goal is to make an ***execve_syscall*** to $/bin/sh$, by looking at [x86-64 syscall table](https://chromium.googlesource.com/chromiumos/docs/+/master/constants/syscalls.md#x86_64-64_bit) we know that the register should be as following:
+Our goal is to make an **execve syscall** to $/bin/sh$, by looking at [x86-64 syscall table](https://chromium.googlesource.com/chromiumos/docs/+/master/constants/syscalls.md#x86_64-64_bit) we know that the register should be as following:
 |register|arg|value
 |-|-|-|
 |RAX|syscall number|0x3b|
