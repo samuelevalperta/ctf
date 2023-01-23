@@ -1,3 +1,10 @@
 # CTF Writeups
+A repo with (almost) all capture the flag challenges I made, with writeups and attachments.
 
-A repo with (almost) all capture the flag challenge I made, with writeups and file.
+## Binary
+
+### ROP
+
+- [Emergency Call](/OliCyber/OlimpiadiItalianediCybersecurity/SoftwareSecurity/EmergencyCall_SOLVED) - Olicyber
+- [Terminator] (/OliCyber/OlimpiadiItalianediCybersecurity/SoftwareSecurity/Terminator_SOLVED) - Olicyber
+ 
