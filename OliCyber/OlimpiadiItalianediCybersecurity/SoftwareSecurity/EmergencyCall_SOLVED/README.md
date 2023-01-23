@@ -2,11 +2,11 @@
 
 ## Description
 > Questa non è un esercitazione! Ripeto. Questa non è un esercitazione!!! Hai una sola chiamata di emergenza, quindi usala bene.
-Puoi collegarti al servizio remoto con:<eol>
+Puoi collegarti al servizio remoto con:
 nc emergency.challs.olicyber.it 10306
 
 ## Solution
-Thanks to Ghidra we can easily notice an out of bounds write in the request of the emergency. We are asked for the input trought a *read_syscall* with maximum *size* of 128 and it will be saved in a *char array* of *length* 32.
+Thanks to Ghidra we can easily notice an out of bounds write in the request of the emergency. We are asked for the input trought a **read_syscall** with maximum **size** of 128 and it will be saved in a **char array** of **length** 32.
 
 That's the output of the `checksec` command
 ```bash
@@ -17,7 +17,7 @@ PIE:      No PIE (0x400000)
 ```
 Having No PIE means that the base of our binary will always be the same in every execution, so we exactly know the address of every assembly operation, even on the remote service.<br>
 
-Let's better analyze the program locally by sending this payload as second input 
+Let's better analyze the program locally by sending this payload as second input
 ```python
 payload = b'A'*32 + b'B'*8 + b'C'*8 + b'D'*16
 ```
@@ -29,12 +29,12 @@ This is how the stack looks right after we send our payload
 ||0xfe168|input + 8|AAAAAAAA|
 ||0xfe170|input + 16|AAAAAAAA
 ||0xfe178|input + 24|AAAAAAAA
-|rbp|0xfe180|input + 32 (0x4242424242424242)|BBBBBBBB 
+|rbp|0xfe180|input + 32 (0x4242424242424242)|BBBBBBBB
 |ret_addr|0xfe188|input + 40 (0x4343434343434343)|CCCCCCCC
 ||0xfe190|input + 48 (0x4444444444444444)|DDDDDDDD
 ||0xfe198|input + 56 (0x4444444444444444)|DDDDDDDD
 
-<br>`RIP` now points to `0x401031` which contains `ret` instruction.
+<br>**RIP** now points to $0x401031 which contains `ret` instruction.
 This `ret` instruction execute `pop rip`.
 
 Now `RIP` points to `0x4010e0` which is `return 0`, executing this will do as following:
@@ -43,7 +43,7 @@ Now `RIP` points to `0x4010e0` which is `return 0`, executing this will do as fo
 
 |register|address|value|ascii
 |-|-|-|-|
-|rsp,rbp|0xfe180|input + 32 (0x4242424242424242)|BBBBBBBB 
+|rsp,rbp|0xfe180|input + 32 (0x4242424242424242)|BBBBBBBB
 |ret_addr|0xfe188|input + 40 (0x4343434343434343)|CCCCCCCC
 ||0xfe190|input + 48 (0x4444444444444444)|DDDDDDDD
 ||0xfe198|input + 56 (0x4444444444444444)|DDDDDDDD
