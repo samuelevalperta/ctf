@@ -72,7 +72,7 @@ Now `RIP` points to `0x4010e0` which is `return 0`, executing this will do as fo
 
 <br>
 
-**RIP** = `0x4343434343434343`.
+**RIP** = ${0x}\Hexadecimalnum{4343434343434343}$.
 
 At this point, knowing that we have control over the return address, we can adapt the payload to our needs.
 We can exploit this using ROP due to the fact that the program was compiled without PIE.
