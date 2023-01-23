@@ -34,7 +34,7 @@ This is how the stack looks right after we send our payload
 ||0xfe190|input + 48 (0x4444444444444444)|DDDDDDDD
 ||0xfe198|input + 56 (0x4444444444444444)|DDDDDDDD
 
-<br>**RIP** now points to $0x401031$ which contains `ret` instruction.
+<br>**RIP** now points to $0$x$401031$ which contains `ret` instruction.
 This `ret` instruction execute `pop rip`.
 
 Now `RIP` points to `0x4010e0` which is `return 0`, executing this will do as following:
