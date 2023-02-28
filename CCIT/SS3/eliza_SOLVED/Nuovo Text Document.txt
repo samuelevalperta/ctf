@@ -1,0 +1,11 @@
+Eliza is a revolutionary AI chatbot.
+
+It can understand any sentence and freely discuss any subject.
+
+The only limit is that a sentence cannot be longer than 16 characters.
+
+Can you convince the bot to tell you the flag?
+
+nc eliza.challs.cyberchallenge.it 9131
+
+MD5: 59329eda1859eefc2e03c27eac02dfb2

@@ -1,0 +1,9 @@
+There is a simple calculator; can you exploit it?
+
+nc sum.challs.cyberchallenge.it 9134
+
+MD5:
+
+50390b2ae8aaa73c47745040f54e602f libc-2.27.so
+
+24d3c1154799180f3394c97374bd8186 sum

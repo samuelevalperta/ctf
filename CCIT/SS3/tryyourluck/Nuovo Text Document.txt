@@ -1,0 +1,9 @@
+I hope you're lucky.
+
+If you are, I'll spawn a shell for you.
+
+Otherwise, well, you'll need to try again, and again, and again...
+
+nc luck.challs.cyberchallenge.it 9133
+
+MD5: 3d7325a719f39b0c148d7aab2a8e72fd

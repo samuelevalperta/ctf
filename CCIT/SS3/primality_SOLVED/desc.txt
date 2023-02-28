@@ -1,0 +1,13 @@
+Really Optimized Primality test is a service that can tell you whether a number
+
+is prime or not.
+
+Well, being extremely optimized, if the service tells you that a number is not
+
+a prime then you can be sure, otherwise well... let's say it depends ;)
+
+Anyway, the flag is in the usual place. Can you read the flag?
+
+nc rop.challs.cyberchallenge.it 9130
+
+MD5: 96b671f28a45791b8bfa0a1b8bc0a2e5
