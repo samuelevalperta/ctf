@@ -1,0 +1,5 @@
+key[2] = 0
+tmp[0] = path[0]
+
+key[3] = 1
+tmp[1] = path[1]

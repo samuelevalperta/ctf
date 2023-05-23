@@ -1,0 +1,5 @@
+# run in a docker with python2
+python volatility/vol.py -f memory.vmem --profile=Win7SP1x64 consoles
+
+#b64 decode the first result, open link and download image
+steghide extract -sf -p Hmont4na winxp.jpg

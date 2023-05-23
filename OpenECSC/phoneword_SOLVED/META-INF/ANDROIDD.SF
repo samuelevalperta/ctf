@@ -1,0 +1,110 @@
+Signature-Version: 1.0
+Created-By: 1.0 (Android)
+SHA-256-Digest-Manifest: W2lh0ywfrK+Y1qRX81/tdUmYqazXD26lhrv2v5iqpjU=
+X-Android-APK-Signed: 2, 3
+
+Name: AndroidManifest.xml
+SHA-256-Digest: eLaawcvL7WsaE/t9UIJwyb/J4RgpIpmDBI+hKt9NuWA=
+
+Name: assemblies/assemblies.blob
+SHA-256-Digest: vEhiJ4v8joE7D3fBCSSu1keph/VideZXXoYPR9vXjA4=
+
+Name: assemblies/assemblies.manifest
+SHA-256-Digest: kCEg0jRmEi0suB65USRBunuUzykldPidga/SnnwO/vg=
+
+Name: classes.dex
+SHA-256-Digest: j7B0wXinIPEvqG8fZUHrbgFcLAZvBBTQbTQrujuPJ/o=
+
+Name: lib/arm64-v8a/libmono-btls-shared.so
+SHA-256-Digest: k0hb3CjvDuzgZ0rrgnvhgTvX16ug8KSFBFPC3ItuTTM=
+
+Name: lib/arm64-v8a/libmono-native.so
+SHA-256-Digest: mrZmpTagkLdb+lxuKJQbs1vcU2cFoPVwrCWQPlevi1M=
+
+Name: lib/arm64-v8a/libmonodroid.so
+SHA-256-Digest: 7bNyhNe/2DxF/bWzZ1roE3Prm19lvg8FLIg3SJgUNZk=
+
+Name: lib/arm64-v8a/libmonosgen-2.0.so
+SHA-256-Digest: KGrbTEA8hOHBd0FqDghj689ZM/iFOTOULAT58V4fSGA=
+
+Name: lib/arm64-v8a/libxa-internal-api.so
+SHA-256-Digest: aAOm9r3keM0YBDE8nSEI567g7u3lCiSrFXBMESaOIhs=
+
+Name: lib/arm64-v8a/libxamarin-app.so
+SHA-256-Digest: x5Pupdyb7Pra/nnAnVFYv5HvvATgJWTMs5TR7DDxp/A=
+
+Name: lib/armeabi-v7a/libmono-btls-shared.so
+SHA-256-Digest: MrI5rlImCC1VinHMBbOn8/81Cf7kMzu+FUOkc2JRr4c=
+
+Name: lib/armeabi-v7a/libmono-native.so
+SHA-256-Digest: MVfADT7yOR77CnkpFhAnXl8h0CaW6y9kxZ2KVPFR3V4=
+
+Name: lib/armeabi-v7a/libmonodroid.so
+SHA-256-Digest: w2YRaV7YQzZLu69TaXSzT7v6SV4SAGoi5dAaML7QBCQ=
+
+Name: lib/armeabi-v7a/libmonosgen-2.0.so
+SHA-256-Digest: IBAeOfL1MFVkBApOCBStpZJheRP+0A1XvYCvXszC/Lk=
+
+Name: lib/armeabi-v7a/libxa-internal-api.so
+SHA-256-Digest: cICJRy6KpQw66LPgryg1d4HAM338QBugY4RBgYycOVw=
+
+Name: lib/armeabi-v7a/libxamarin-app.so
+SHA-256-Digest: wB3lkdMa1lcPHNGvmS3u6Np7sXiFimhcie43fuqEo0U=
+
+Name: lib/x86/libmono-btls-shared.so
+SHA-256-Digest: vtciGqVvqPZ8O7pHJkN9pgbOV59YZu2/SorHYhxYDVo=
+
+Name: lib/x86/libmono-native.so
+SHA-256-Digest: D7HJsV9dYoFvoCxlhfSv/7blwvVAc56rBTFbGX+oTR4=
+
+Name: lib/x86/libmonodroid.so
+SHA-256-Digest: oXGlYV9UrpdSHBdKUz5V1lDDtmLF0YDIWiInZiaC+wc=
+
+Name: lib/x86/libmonosgen-2.0.so
+SHA-256-Digest: W+fGhIZkDfK8KmINK608z3Hf20Z+ceAFv/pvpm6SZd8=
+
+Name: lib/x86/libxa-internal-api.so
+SHA-256-Digest: 6lNusJIQk2fuK7m9CFYhlvv6NVtcbsLIHDErBy+CWr8=
+
+Name: lib/x86/libxamarin-app.so
+SHA-256-Digest: KpbyRHu/4ZN/9lcTOrMmML8TKbrUMvbMeA8XS/h/Kik=
+
+Name: lib/x86_64/libmono-btls-shared.so
+SHA-256-Digest: qq8d4lU826878Eov/DbF87NqpbRt1yJyrXwnRu8IsW8=
+
+Name: lib/x86_64/libmono-native.so
+SHA-256-Digest: Y5+oU9x9s0J2nH+ibaz6VzVshtttZj6R4sUDBoFB1Ig=
+
+Name: lib/x86_64/libmonodroid.so
+SHA-256-Digest: n8UW9QIDgmEJKYbfbzw97muuWVqGcxo8mtu6TwKHz2w=
+
+Name: lib/x86_64/libmonosgen-2.0.so
+SHA-256-Digest: YCEtiqZoAuUEhlNPQEFyycr00CK8t7sOAPX8qUFWWWw=
+
+Name: lib/x86_64/libxa-internal-api.so
+SHA-256-Digest: MgF0I3kV6RALgnOX8tRxNpdw92/KG5AgcrLlnxdeHvk=
+
+Name: lib/x86_64/libxamarin-app.so
+SHA-256-Digest: HXVLZhLNhuq85CPhS+L8A3m8XgA8++6rwd3sc+XO3V8=
+
+Name: res/drawable-hdpi-v4/icon.png
+SHA-256-Digest: Erq1aJ291sEOd17/nZsE1CYaqD+rQZyVPNeMkm84OCY=
+
+Name: res/drawable-mdpi-v4/icon.png
+SHA-256-Digest: b2h/45NEYNoke10zq366SxIahO/CtRXWQ1nbLdOo7SE=
+
+Name: res/drawable-xhdpi-v4/icon.png
+SHA-256-Digest: lZ6Wm53r0ke6vT1yDA8B3uh1tsdnGaDQTZr82s6ioJs=
+
+Name: res/drawable-xxhdpi-v4/icon.png
+SHA-256-Digest: O45ZrnEKzCeDGkiYAV/d6pg3FGU/HXRVI0PLZ4EEXok=
+
+Name: res/drawable-xxxhdpi-v4/icon.png
+SHA-256-Digest: GMx//O6LDbxf0nM7vb0tEE2tftQDStHmM7/V5AZ/4hc=
+
+Name: res/layout/main.xml
+SHA-256-Digest: HiH+29mW40Nwds5I8YjD+UOYTq+U47QmroGqMPyuqEc=
+
+Name: resources.arsc
+SHA-256-Digest: 9SLeB3cWVtj+ArepCjyjw1mlk6nwCqqMLgRntYRJp7A=
+
