@@ -1,0 +1,39 @@
+#!/bin/sh
+
+chown -R root:root /
+chmod 700 /root
+chown -R ctf:ctf /home/ctf
+
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t devpts -o gid=5,mode=0620 devpts /dev/pts
+mount -t devtmpfs -o nosuid,mode=0755 udev /dev
+
+FLAG=$(head -n 128 /dev/urandom | sha256sum | cut -d" " -f1 | tr -d "\n\r")
+mv /root/flag.txt "/root/$FLAG"
+chmod 400 /root/$FLAG
+
+insmod /knote.ko
+chmod 666 /dev/knote
+
+cat <<EOF
+
+
+  ██╗░░██╗███╗░░██╗░█████╗░████████╗███████╗
+  ██║░██╔╝████╗░██║██╔══██╗╚══██╔══╝██╔════╝
+  █████═╝░██╔██╗██║██║░░██║░░░██║░░░█████╗░░
+  ██╔═██╗░██║╚████║██║░░██║░░░██║░░░██╔══╝░░
+  ██║░╚██╗██║░╚███║╚█████╔╝░░░██║░░░███████╗
+  ╚═╝░░╚═╝╚═╝░░╚══╝░╚════╝░░░░╚═╝░░░╚══════╝
+  
+                                      by kalex
+
+
+EOF
+
+/bin/knote help
+
+setsid cttyhack setuidgid 1000 /bin/sh
+
+umount /proc && umount /sys
+poweroff -d 0 -f
