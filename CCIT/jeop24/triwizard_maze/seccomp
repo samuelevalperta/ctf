@@ -1,0 +1,37 @@
+  \                         /
+   \                       /
+    ]                     [         Welcome
+    ]___               ___[       young wizard!
+    ]  ]\             /[  [
+    ]  ] \           / [  [         Can you
+    ]  ]  ]         [  [  [         ROP your
+    ]  ]  ]__     __[  [  [        way to the
+    ]  ]  ] ]\ _ /[ [  [  [      Triwizard Cup?
+    ]  ]  ] ] (#) [ [  [  [
+    ]  ]  ]_] nHn [_[  [  [       ___________
+    ]  ]  ]  HHHHH. [  [  [      '._==_==_=_.'
+    ]  ] /   `HH("N  \ [  [      .-\:      /-.
+    ]__]/     HHH  "  \[__[     | (|:.     |) |
+    ]         NNN         [      '-|:.     |-'
+    ]         N/"         [         '::. .'
+    ]         N H         [           ) (
+   /          N            \        _.' '._
+  /           q,            \      `"""""""`
+
+void print(const void *buf, size_t n) is at 0x13371f2b
+
+ line  CODE  JT   JF      K
+=================================
+ 0000: 0x20 0x00 0x00 0x00000004  A = arch
+ 0001: 0x15 0x00 0x09 0x40000003  if (A != ARCH_I386) goto 0011
+ 0002: 0x20 0x00 0x00 0x00000000  A = sys_number
+ 0003: 0x15 0x08 0x00 0x00000059  if (A == readdir) goto 0012
+ 0004: 0x15 0x07 0x00 0x00000003  if (A == read) goto 0012
+ 0005: 0x15 0x06 0x00 0x00000004  if (A == write) goto 0012
+ 0006: 0x15 0x05 0x00 0x00000006  if (A == close) goto 0012
+ 0007: 0x15 0x04 0x00 0x00000001  if (A == exit) goto 0012
+ 0008: 0x15 0x00 0x02 0x00000127  if (A != openat) goto 0011
+ 0009: 0x20 0x00 0x00 0x00000018  A = filename # openat(dfd, filename, flags, mode)
+ 0010: 0x15 0x01 0x00 0x13375d60  if (A == 0x13375d60) goto 0012
+ 0011: 0x06 0x00 0x00 0x00000000  return KILL
+ 0012: 0x06 0x00 0x00 0x7fff0000  return ALLOW

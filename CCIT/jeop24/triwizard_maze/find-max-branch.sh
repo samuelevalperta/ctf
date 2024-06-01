@@ -1,0 +1,1 @@
+for ((i = 0; i < 50; i++)); do ./triwizard-maze & sleep 0.01 && killall triwizard-maze && for d in $(find /tmp/maze/entry -type d); do [ -d "$d" ] && c=$(find "$d" -mindepth 1 -maxdepth 1 -type d | wc -l); echo $c; done; done | sort -rn | head -1;

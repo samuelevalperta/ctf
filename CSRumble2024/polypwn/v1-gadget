@@ -1,0 +1,2 @@
+0x0000000000000ba8: lbu $v1, 4($sp); movz $v1, $at, $v0; sll $v0, $v1, 0; ld $ra, 8($sp); jr $ra; daddiu $sp, $sp, 0x10; 
+0x00000000000014b4: movn $v0, $v1, $at; addiu $v0, $zero, -1; sll $v0, $v0, 0; ld $ra, 8($sp); jr $ra; daddiu $sp, $sp, 0x10; 
