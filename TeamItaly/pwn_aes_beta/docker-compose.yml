@@ -1,0 +1,16 @@
+services:
+  aes-beta:
+    image: cybersecnatlab/challenge-jail@sha256:8ac55aa6e7fe753a43b9b5a0283113544742798aaef7977eab0e854c476a634a
+    restart: unless-stopped
+    init: true
+    privileged: true
+    volumes:
+      - './build/aes-beta:/home/user/chall:ro'
+      - './glibc/ld-linux-x86-64.so.2:/home/user/ld-linux.so:ro'
+      - './glibc:/home/user/libs:ro'
+    ports:
+      - '1337:1337'
+    environment:
+      - 'FLAG=TeamItaly{This_is_just_a_testing_flag_nothing_fancy_to_see_for_you_poor_testers_:(((_[random 8]}'
+      - 'TIMEOUT=600'
+      - 'RLIMIT_NOFILE=1024'
